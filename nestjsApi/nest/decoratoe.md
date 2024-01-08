@@ -233,7 +233,7 @@ export class AppController {
 // @Put、@Delete、@Patch、@Options、@Head 分别接受 put、delete、patch、options、head 的请求
 ```
 
-### 9.@SetMetadata指定metadata
+### 9.@SetMetadata 指定 metadata
 ```JS
 // aaa.controller.ts
 
@@ -620,4 +620,59 @@ export class CccController {
     }
 }
 // 我们把@Controller('ccc')替换成了@MyClass()，然后访问一下http://127.0.0.1:3000/class/query?aaa=aaa&bbb=bbb，同样也是没问题的
+```
+
+### 21.UseGuards 装饰器
+```JS
+// 我们在 findAll 方法上使用了 UseGuards 装饰器，并传入了 AuthGuard 身份验证守卫。这将确保只有通过身份验证的用户才能访问 /users 路由
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth.guard';
+import { UserService } from './user.service';
+
+@Controller('users')
+export class UserController {
+    constructor(private readonly userService: UserService) {}
+
+    @Get()
+    @UseGuards(AuthGuard)
+    async findAll() {
+        return this.userService.findAll();
+    }
+}
+```
+
+### 22.CanActivate 装饰器
+```JS
+import { Controller, Get, metadata } from '@nestjs/common';
+
+@Controller('cats')
+class CatsController {
+    @Get()
+    @metadata('role', 'admin')
+    getCat(): string {
+        return 'Hello Cat';
+    }
+}
+```
+
+### 23.Reflector 装饰器
+```JS
+// Reflector 则是一个类，可以通过构造函数中注入 Injector 来创建。它提供了若干个方法，用于获取类、方法和属性的元数据，并返回反应这些元数据的方法调用
+
+import { Controller, Get, metadata, Reflector } from '@nestjs/common';
+
+@Controller('cats')
+class CatsController {
+    constructor(private readonly reflector: Reflector) {}
+
+    @Get()
+    @metadata('role', 'admin')
+    getCat(): string {
+        const role = this.reflector.get<string>('role', CatsController.prototype.getCat);
+        return `Hello Cat, your role is ${role}`;
+    }
+}
+// 以上代码创建了一个 CatsController 类，并在其 getCat() 方法上添加了一个元数据 role，
+// 值为 admin。在 CatsController 类的构造函数中注入了 Reflector，并在 getCat() 方法中使用 
+// reflector.get() 方法获取元数据 role 的值，并将其展示在返回结果中
 ```

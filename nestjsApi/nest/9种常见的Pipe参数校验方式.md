@@ -149,7 +149,7 @@ getI(
 
 ### 以上都是Get参数。如果用POST参数，阁下应该如何应对？
 
-### 8.ValidationPipe
+### 8.ValidationPipe 验证 post 请求参数
 ```JS
 // post 请求的数据是通过 @Body 装饰器来取，并且要有一个 dto class 来接收,
 // 用于在处理请求数据之前验证请求数据，并在失败时返回400 Bad Request响应
