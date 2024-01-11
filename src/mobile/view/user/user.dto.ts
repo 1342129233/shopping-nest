@@ -8,4 +8,7 @@ export class CreateUserDto {
     @IsString({ message: '密码必须为字符串类型' })
     password: string;
     is_del: number;
+    phone: number;
+    email: string;
+    address: string;
 }

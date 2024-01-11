@@ -1,14 +1,10 @@
 import { Module } from '@nestjs/common';
-import * as fs from 'fs';
-import * as path from 'path';
 
 import "reflect-metadata";
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HomeModule } from 'src/mobile/view/home/home.module';
-import { CategoryModule } from 'src/mobile/view/category/category.module';
-import { UserModule } from 'src/mobile/view/user/user.module';
-import User from '@/typeorm/mysql/user';
-
+import { HomeModule } from '@/mobile/view/home/home.module';
+import { CategoryModule } from '@/mobile/view/category/category.module';
+import { UserModule } from '@/mobile/view/user/user.module';
 
 @Module({
     imports: [
@@ -35,6 +31,5 @@ import User from '@/typeorm/mysql/user';
     controllers: [],
     providers: []
 })
-
 export class AppModule {
 }

@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
+import { UserExtend } from './userExtend';
 
 @Entity({
     name: "user"
 })
-export default class User {
+export class User {
     // 下面定义的会自动在数据库中生成对应的字段
     // 主键且自动自增的
     @PrimaryGeneratedColumn({
@@ -54,4 +55,7 @@ export default class User {
         comment: '更新时间'
     })
     updateAt: Date;
+
+    @OneToOne(type => UserExtend, userExtend => userExtend.user)
+    userExtend: UserExtend;
 }

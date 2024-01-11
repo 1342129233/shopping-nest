@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Param, Body, Put, Delete, Response } from '@nestjs/common';
 import { UserService } from './user.service';
-import User from '@/typeorm/mysql/user';
+import { User } from '@/typeorm/mysql/user';
+import { UserExtend } from '@/typeorm/mysql/userExtend';
 import { CreateUserDto } from './user.dto';
+
 
 @Controller('user')
 export class UserController {
@@ -29,12 +31,12 @@ export class UserController {
 
     @Post('create')
     async create(@Body() body: CreateUserDto, @Response() res) {
-        console.log(111, body)
-        // const user = new User(); 
-        // user.username = body.username;
-        // user.password = body.password;
-        // user.isDel = body.is_del || 0;
-        // await this.userService.create(user);
+        const user = new User(); 
+        user.username = body.username;
+        user.password = body.password;
+        user.isDel = body.is_del || 0;
+
+        await this.userService.create(user);
         res.send({
             code: "E1",
             msg: "成功"
@@ -63,6 +65,27 @@ export class UserController {
         res.send({
             code: "E1",
             msg: "成功"
+        });
+    }
+
+    // 一对一插入
+    @Post('add/addTags')
+    async addTags(@Body() body: CreateUserDto, @Response() res) {
+        this.userService.addTags(body)
+        res.send({
+            code: "E1",
+            msg: "成功"
+        });
+    }
+
+    // 一对一查询 http://localhost:3000/user/mainAndSub/11 下面是全部查看不是按ID查询,但是可以
+    @Get('mainAndSub/:id')
+    async getMainAndSub(@Param('id') id: number, @Response() res) {
+        const value = await this.userService.getMainAndSub(id);
+        res.send({
+            code: "E1",
+            msg: "成功",
+            data: value
         });
     }
 }
