@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions, EntityManager, QueryRunner, MoreThanOrEqual } from 'typeorm';
 import { User } from '@/typeorm/mysql/user';
 import { UserExtend } from '@/typeorm/mysql/userExtend';
-import { CreateUserDto } from './user.dto';
+import { Posts } from '@/typeorm/mysql/posts';
+import { UserExtendDto, UserAndPostsDto } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,10 @@ export class UserService {
         
         @InjectRepository(UserExtend)
         private readonly UserExtendRepository: Repository<User>,
+
+        @InjectRepository(UserExtend)
+        private readonly Posts: Repository<Posts>,
+
         private readonly manager: EntityManager
     ){}
 
@@ -40,8 +45,8 @@ export class UserService {
         await this.userRepository.delete(id);
     }
 
-    // 一对一表关系
-    async addTags(body: CreateUserDto) {
+    // 一对一表关系插入
+    async addTags(body: UserExtendDto) {
         // 先增副键然后关联主键
         const userExtend = new UserExtend();
         userExtend.phone = body.phone;
@@ -72,7 +77,7 @@ export class UserService {
         }
     }
 
-    // 获取
+    // 一对一表关系获取
     async getMainAndSub(id: number) {
         // // 获取主表数据
         // const main = await this.userRepository.findOne({ where: { id } } as any);
@@ -96,6 +101,62 @@ export class UserService {
             // ...sub
             result
             
+        }
+    }
+
+    // 一对多表关系插入
+    async addUserAndPosts(body: UserAndPostsDto) {
+        try{
+            let potosArray = []; // 用于保存已存的图片内容
+            if (body.posts) {
+                for (let i = 0; i < body.posts.length; i++) {
+                    const posts = new Posts();
+                    posts.title = body.posts[i].title;
+                    posts.content = body.posts[i].content;
+                    // 保存至数据库
+                    await this.manager.save(Posts, posts);
+                    // 保存已存在内容
+                    potosArray.push(posts);
+                }
+            }
+            console.log('photos', potosArray);
+            let user = new User();
+            user.username = body.username;
+            user.password = body.password;
+            // 绑定关联
+            user.posts = potosArray;
+            // 保存
+            const main = await this.manager.save(User, user);
+
+            return {
+                ...main,
+                potos: potosArray
+            }
+        }catch (err) {
+            await this.manager.queryRunner.rollbackTransaction(); // 回滚事务。
+            throw new Error('Failed to save data!'); 
+        }
+    }
+
+    // 一对多表关系获取
+    async getUserAndPosts(id: number) {
+        try{
+            // 正向查询数据
+            // return this.manager.getRepository(User).find({ relations: ['posts'] });
+            // 正向查询单个数据
+            // return this.manager.getRepository(User).findOne({ where: { id: 12 } });
+            // 条件查询
+            const res = await this.manager
+                .createQueryBuilder(User, "user") // 指定查询的实体类和别名
+                .leftJoinAndSelect("user.posts", "post") // 进行左连接查询，关联 User 实体类的 “posts” 属性，别名为 “post”
+                .where("user.id = :id", { id: 12 })
+                .getOne();
+            console.log(444, res);
+            return res;
+            // 反向查询数据
+            // return this.manager.getRepository(User).find({ relations: ['posts'] });
+        }catch (err) {
+            throw new Error('Failed to save data!'); 
         }
     }
 }

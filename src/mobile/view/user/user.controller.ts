@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Param, Body, Put, Delete, Response } from '@nestjs/common';
+import { Controller, Headers, Get, Post, Param, Body, Put, Delete, Response } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@/typeorm/mysql/user';
 import { UserExtend } from '@/typeorm/mysql/userExtend';
-import { CreateUserDto } from './user.dto';
+import { UserDto, UserExtendDto, UserAndPostsDto } from './user.dto';
 
 
 @Controller('user')
@@ -30,7 +30,7 @@ export class UserController {
     }
 
     @Post('create')
-    async create(@Body() body: CreateUserDto, @Response() res) {
+    async create(@Body() body: UserDto, @Response() res) {
         const user = new User(); 
         user.username = body.username;
         user.password = body.password;
@@ -70,7 +70,7 @@ export class UserController {
 
     // 一对一插入
     @Post('add/addTags')
-    async addTags(@Body() body: CreateUserDto, @Response() res) {
+    async addTags(@Body() body: UserExtendDto, @Response() res) {
         this.userService.addTags(body)
         res.send({
             code: "E1",
@@ -82,6 +82,28 @@ export class UserController {
     @Get('mainAndSub/:id')
     async getMainAndSub(@Param('id') id: number, @Response() res) {
         const value = await this.userService.getMainAndSub(id);
+        res.send({
+            code: "E1",
+            msg: "成功",
+            data: value
+        });
+    }
+
+    // 一对多插入
+    @Post('add/addUserAndPosts')
+    async addUserAndPosts(@Headers('Content-Type') contentType: string, @Body() body: UserAndPostsDto, @Response() res) {
+        const value = await this.userService.addUserAndPosts(body);
+        res.send({
+            code: "E1",
+            msg: "成功",
+            data: value
+        });
+    }
+
+    // 一对多查询
+    @Get('userAndPosts/:id')
+    async getUserAndPosts(@Param('id') id: number, @Response() res) {
+        const value = await this.userService.getUserAndPosts(id);
         res.send({
             code: "E1",
             msg: "成功",

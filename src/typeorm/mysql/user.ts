@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, OneToMany } from 'typeorm';
 import { UserExtend } from './userExtend';
+import { Posts } from './posts';
 
 @Entity({
     name: "user"
@@ -56,6 +57,10 @@ export class User {
     })
     updateAt: Date;
 
+    // 一对多,自然Posts实体类中就是多对一的方式
     @OneToOne(type => UserExtend, userExtend => userExtend.user)
     userExtend: UserExtend;
+
+    @OneToMany(type => Posts, post => post.user)
+    posts: Posts[];
 }
