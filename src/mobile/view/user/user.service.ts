@@ -4,7 +4,8 @@ import { Repository, FindOneOptions, EntityManager, QueryRunner, MoreThanOrEqual
 import { User } from '@/typeorm/mysql/user';
 import { UserExtend } from '@/typeorm/mysql/userExtend';
 import { Posts } from '@/typeorm/mysql/posts';
-import { UserExtendDto, UserAndPostsDto } from './user.dto';
+import { Tags } from '@/typeorm/mysql/tags';
+import { UserExtendDto, UserAndPostsDto, UserAndPostsAndTagsDto } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,23 +14,41 @@ export class UserService {
         private readonly userRepository: Repository<User>,
         
         @InjectRepository(UserExtend)
-        private readonly UserExtendRepository: Repository<User>,
+        private readonly UserExtendRepository: Repository<UserExtend>,
 
-        @InjectRepository(UserExtend)
+        @InjectRepository(Posts)
         private readonly Posts: Repository<Posts>,
+
+        @InjectRepository(Tags)
+        private readonly Tags: Repository<Tags>,
 
         private readonly manager: EntityManager
     ){}
 
     async findAll(): Promise<User[]> {
+        // 第一种方式 对 orm 不熟悉的情况可以使用 sql 语句进行查询
+        // const getsql = 'select * from user';
+        // return await this.userRepository.query(getsql);
+
+        // 第二种方式
         return await this.userRepository.find();
     }
 
     async findOne(id: number): Promise<User> {
+        // 第一种方式
+        // const getsql = 'select * from user where id =' + id;
+        // return await this.userRepository.query(getsql);
+
+        // 第二种方式
         return await this.userRepository.findOne({ where: { id: id } } as any);
     }
 
     async create(user: User) {
+        // 第一种方式
+        // const addsql = `INSERT INFO user(username, password) values ("${user.username}", "${user.password}")`;
+        // return await this.userRepository.query(addsql);
+
+        // 第二种方式 save() 也可以换成 insert()
         return await this.userRepository.save(user);
     }
 
@@ -38,10 +57,20 @@ export class UserService {
     }
     
     async update(id: number, user: User): Promise<void> {
+        // 第一方式 sql 语句
+        // const upsql = `UPDATE user SET name = "${username}" WHERE id = "${id}"`;
+        // return await this.userRepository.query(upsql);
+
+        // 第二种方式是替换 save() 也可以换成 insert()
         await this.userRepository.update(id, user);
     }
     
     async delete(id: number): Promise<void> {
+        // 第一方式
+        // const dsql = `DELETE FROM user WHERE id = ${id}`;
+        // return await this.userRepository.query(dsql);
+
+        //第二方式 
         await this.userRepository.delete(id);
     }
 
@@ -72,7 +101,6 @@ export class UserService {
             return { main, sub };
         } catch (err) {
             // 如果保存副表数据失败，则事务回滚
-            console.error(err);
             throw err;
         }
     }
@@ -119,7 +147,6 @@ export class UserService {
                     potosArray.push(posts);
                 }
             }
-            console.log('photos', potosArray);
             let user = new User();
             user.username = body.username;
             user.password = body.password;
@@ -133,7 +160,6 @@ export class UserService {
                 potos: potosArray
             }
         }catch (err) {
-            await this.manager.queryRunner.rollbackTransaction(); // 回滚事务。
             throw new Error('Failed to save data!'); 
         }
     }
@@ -151,12 +177,52 @@ export class UserService {
                 .leftJoinAndSelect("user.posts", "post") // 进行左连接查询，关联 User 实体类的 “posts” 属性，别名为 “post”
                 .where("user.id = :id", { id: 12 })
                 .getOne();
-            console.log(444, res);
             return res;
             // 反向查询数据
             // return this.manager.getRepository(User).find({ relations: ['posts'] });
         }catch (err) {
             throw new Error('Failed to save data!'); 
+        }
+    }
+
+    // 多对多表关系插入
+    async addPostsAndTags(body: UserAndPostsAndTagsDto) {
+        try {
+            let potosArray: Posts[] = [];
+            for (let i = 0; i < body.posts.length; i++) {
+                const posts = new Posts();
+                posts.title = body.posts[i].title;
+                posts.content = body.posts[i].content;
+                let tagsArray: Tags[] = []
+                // 保存已存在内容
+                potosArray.push(posts);
+                for (let j = 0; j < body.posts[i].tags.length; j++) {
+                    const tags = new Tags();
+                    tags.name = body.posts[i].tags[j].name;
+                    tagsArray.push(tags);
+                    // 保存至数据库
+                    await this.manager.save(Tags, tags);
+                }
+                // 绑定关联
+                posts.tags = tagsArray;
+                // 保存至数据库
+                await this.manager.save(Posts, posts);
+            }
+            const user = new User();
+            user.username = body.username;
+            user.password = body.password;
+            user.posts = potosArray;
+            await this.manager.save(User, user);
+        } catch (err) {
+            throw new Error('Failed to save data!'); 
+        }
+    }
+
+    // 多对多表查询表关系
+    async getUserAndPostsAndTags(id: number) {
+        const user = await this.Posts.findOne({ where: { id }, relations: ['user', 'tags']});
+        return {
+            user
         }
     }
 }

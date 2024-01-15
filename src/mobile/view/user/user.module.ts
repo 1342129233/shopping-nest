@@ -4,10 +4,12 @@ import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '@/typeorm/mysql/user';
 import { UserExtend } from '@/typeorm/mysql/userExtend';
+import { Tags } from '@/typeorm/mysql/tags';
+import { Posts } from '@/typeorm/mysql/posts';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserExtend, User])
+        TypeOrmModule.forFeature([UserExtend, User, Tags, Posts])
     ],
     controllers: [UserController],
     providers: [UserService]

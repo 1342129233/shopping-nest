@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 import { User } from './user';
+import { Tags } from './tags';
 
 @Entity({
     name: 'posts'
@@ -65,5 +66,9 @@ export class Posts {
     // 多对一
     @ManyToOne(type => User, user => user.posts)
     user: User;
+
+    @ManyToMany(type => Tags)
+    @JoinTable() // 这个装饰器的实体类为主要操作对象
+    tags: Tags[];
 }
 

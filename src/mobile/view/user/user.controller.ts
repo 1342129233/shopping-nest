@@ -2,7 +2,7 @@ import { Controller, Headers, Get, Post, Param, Body, Put, Delete, Response } fr
 import { UserService } from './user.service';
 import { User } from '@/typeorm/mysql/user';
 import { UserExtend } from '@/typeorm/mysql/userExtend';
-import { UserDto, UserExtendDto, UserAndPostsDto } from './user.dto';
+import { UserDto, UserExtendDto, UserAndPostsDto, UserAndPostsAndTagsDto } from './user.dto';
 
 
 @Controller('user')
@@ -45,7 +45,6 @@ export class UserController {
 
     @Put(':id')
     async update(@Param('id') id: number, @Body() user, @Response() res) {
-        console.log('update', id, user);
         const value = await this.userService.findOne(id);
         const users = {
             ...value,
@@ -60,7 +59,6 @@ export class UserController {
 
     @Delete(':id')
     async delete(@Param('id') id: number, @Response() res) {
-        console.log('id', id);
         await this.userService.delete(id);
         res.send({
             code: "E1",
@@ -109,5 +107,27 @@ export class UserController {
             msg: "成功",
             data: value
         });
+    }
+
+    // 多对多插入
+    @Post('add/postsAndTags')
+    async addPostsAndTags(@Body() body: UserAndPostsAndTagsDto, @Response() res) {
+        const value = await this.userService.addPostsAndTags(body);
+        res.send({
+            code: "E1",
+            msg: "成功",
+            data: value
+        }); 
+    }
+
+    // 多对多查询
+    @Get('userAndPostsAndTags/:id')
+    async userAndPostsAndTags(@Param('id') id: number, @Response() res) {
+        const value = await this.userService.getUserAndPostsAndTags(id);
+        res.send({
+            code: "E1",
+            msg: "成功",
+            data: value
+        }); 
     }
 }
