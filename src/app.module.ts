@@ -1,25 +1,31 @@
-import { Module } from '@nestjs/common';
-
+import { Module, UsePipes } from '@nestjs/common';
 import "reflect-metadata";
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HomeModule } from '@/mobile/view/home/home.module';
 import { CategoryModule } from '@/mobile/view/category/category.module';
 import { UserModule } from '@/mobile/view/user/user.module';
+import { AuthModule } from '@/mobile/view/auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport'
+// import { JwtStrategy } from '@/shared/JwtStrategy/jwt.strategy';
+// import { JwtAuthPipe } from '@/shared/JwtStrategy/jwt-auth.pipe';
 
+
+// @UsePipes(new JwtAuthPipe())
 @Module({
     imports: [
         TypeOrmModule.forRoot({
             type: "mysql",
-            host: process.env.DB_HOST, // "127.0.0.1",
-            port: +process.env.DB_PORT, // 3306,
-            username: process.env.DB_USER, //"root",
-            password: process.env.DB_PASSWORD, // "123456",
-            database: process.env.DB_NAME, // "my_user",
-            // host: "127.0.0.1",
-            // port: 3306,
-            // username: "root",
-            // password: "123456",
-            // database: "my_user",
+            // host: process.env.DB_HOST, // "127.0.0.1",
+            // port: +process.env.DB_PORT, // 3306,
+            // username: process.env.DB_USER, //"root",
+            // password: process.env.DB_PASSWORD, // "123456",
+            // database: process.env.DB_NAME, // "my_user",
+            host: "127.0.0.1",
+            port: 3306,
+            username: "root",
+            password: "123456",
+            database: "my_user",
             logging: true,
             synchronize: true,
             dropSchema: false,
@@ -31,7 +37,8 @@ import { UserModule } from '@/mobile/view/user/user.module';
         }),
         HomeModule,
         CategoryModule,
-        UserModule
+        UserModule,
+        AuthModule
     ],
     controllers: [],
     providers: []
