@@ -1,14 +1,28 @@
 ### 基于 node 构建项目
 
-#下载node镜像
-FROM node
-#拷贝当前node项目文件夹下所有文件到镜像的/root/wwwroot下
-COPY . /root/wwwroot/
-#进入镜像/root/wwwroot文件夹下,安装对应的依赖
-WORKDIR /root/wwwroot/
-#对外暴露的端口
-EXPOSE 3000
-#安装依赖:通过npm安装依赖时,有时会报错,这时可以通过安装cnpm来安装依赖
+# #下载node镜像
+# FROM node:21.2.0
+# # 使用 yarn 安装依赖
+# # RUN apt-get update && \
+# #     apt-get -y install curl gnupg && \
+# #     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+# #     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+# #     apt-get update && \
+# #     apt-get -y install yarn
+
+# WORKDIR /app
+# #拷贝package.json文件到镜像的/app下
+# COPY package.json /app/package.json
+# # RUN npm config set registry 'http://npm.corp.kuaishou.com'
+# RUN npm install -g npm@6.14.13
+# RUN npm install
+# COPY . /app
+# CMD ["npm", "start"]
+
+FROM node:21.2.0
+WORKDIR /usr/project-nest
+COPY . .
+RUN npm install -g npm@6.14.13
 RUN npm install
-#启动程序
-CMD [ "npm", "start" ]
+EXPOSE 3000
+CMD ["npm", "start"]

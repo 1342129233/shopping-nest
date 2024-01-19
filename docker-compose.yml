@@ -1,0 +1,88 @@
+# 启动一个 Node.js 容器和一个 MySQL 容器并关联它们
+
+version: '0.1'
+services:
+  web:
+    build:
+      context: . # 相对当前 docker-compose.yml 文件所在目录
+      dockerfile: Dockerfile # 基于名称为 Dockerfile 的文件构建镜像
+    ports:
+      - "3001:3000"
+    volumes:
+      - /usr/project-nest
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=123456
+      - DB_NAME=my_user
+    depends_on:
+      - mysql
+  mysql: # 服务名称
+    image: mysql:8.2.0 # 创建容器时所需的镜像
+    container_name: mysql # 容器名称，默认为"工程名称_服务条目名称_序号"
+    ports: # 宿主机与容器的端口映射关系
+      - "3306:3306" # 左边宿主机端口:右边容器端口
+    environment: # 创建容器时所需的环境变量
+      MYSQL_ROOT_PASSWORD: 123456
+    volumes: # 具名挂载，就是给数据卷起了个名字，容器外对应的目录会在 /var/lib/docker/volume 中生成
+      - /var/lib/mysql
+volumes: 
+  mysql-data-volume: {}
+
+# services:
+#   app:
+#     build: .
+#     ports:
+#       - "8080:8080"
+#     volumes:
+#       - .:/app
+#     environment:
+#       - DB_HOST=db
+#       - DB_PORT=3306
+#       - DB_USER=root
+#       - DB_PASSWORD=123456
+#       - DB_NAME=mydb
+#     depends_on:
+#       - db
+#   db:
+#     image: mysql:8.2.0
+#     restart: always
+#     environment:
+#       - MYSQL_ROOT_PASSWORD=123456
+#       - MYSQL_DATABASE=mydb
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - ./data:/var/lib/mysql
+
+# 使用 Docker Compose 定义了两个服务：一个名为 app 的 Node.js 服务和一个名为 db 的 MySQL 服务。下面是这个配置文件的详细说明：
+
+# app 服务：
+# build：使用当前目录中的 Dockerfile 构建 Docker 镜像。
+# ports：将容器的 8080 端口映射到主机的 8080 端口。
+# volumes：将当前目录中的文件映射到容器的 /app 目录中。
+# environment：设置应用程序的环境变量，用于连接 MySQL 数据库。
+# depends_on：指定它所依赖的容器。
+
+# db 服务：
+# image：下载使用 MySQL 5.7 版本的官方镜像。
+# restart：当容器停止或崩溃时自动重启。
+# environment：设置 MySQL 数据库的环境变量，包括管理员密码和主机名。
+# ports：将容器的 3306 端口映射到主机的 3306 端口。
+# volumes：将容器中的 MySQL 数据文件保存到本地磁盘上的 ./data 目录中。
+
+
+# 启动 如果这些容器不存在，Docker Compose 会自动拉取它们的镜像并启动它们
+# docker-compose up
+# 想要在后台运行容器并继续使用终端，可以使用 -d 参数
+# docker-compose up -d
+# 如果想要停止容器
+# docker-compose down
+# 如果你仅想停止容器而不删除其它资源
+# docker-compose stop
+# 使用其它命令对 Docker Compose 文件进行操作
+# docker-compose build：构建所有指定服务的 Docker 镜像。
+# docker-compose start：启动指定服务。
+# docker-compose restart：重启指定服务。
+# docker-compose logs：查看容器的日志输出。
