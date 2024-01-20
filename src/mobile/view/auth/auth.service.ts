@@ -12,6 +12,7 @@ export class AuthService {
     }
     
     async login(login) {
+        
         const user = await this.userRepository.findOne({ where: { username: login.username, password: login.password } } as any);
         if(user) {
             const token = this.jwtService.sign({

@@ -1,14 +1,11 @@
 import { Module, UsePipes } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import "reflect-metadata";
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HomeModule } from '@/mobile/view/home/home.module';
 import { CategoryModule } from '@/mobile/view/category/category.module';
 import { UserModule } from '@/mobile/view/user/user.module';
 import { AuthModule } from '@/mobile/view/auth/auth.module';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport'
-// import { JwtStrategy } from '@/shared/JwtStrategy/jwt.strategy';
-// import { JwtAuthPipe } from '@/shared/JwtStrategy/jwt-auth.pipe';
 
 
 // @UsePipes(new JwtAuthPipe())
