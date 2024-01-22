@@ -6,6 +6,7 @@ import { HomeModule } from '@/mobile/view/home/home.module';
 import { CategoryModule } from '@/mobile/view/category/category.module';
 import { UserModule } from '@/mobile/view/user/user.module';
 import { AuthModule } from '@/mobile/view/auth/auth.module';
+import { SwaggerModule } from '@/mobile/view/swagger/swagger.module';
 
 
 // @UsePipes(new JwtAuthPipe())
@@ -35,7 +36,8 @@ import { AuthModule } from '@/mobile/view/auth/auth.module';
         HomeModule,
         CategoryModule,
         UserModule,
-        AuthModule
+        AuthModule,
+        SwaggerModule
     ],
     controllers: [],
     providers: []

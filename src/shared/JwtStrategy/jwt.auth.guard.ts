@@ -13,13 +13,14 @@ export class JwtAuthGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         // 请求的url，用于判断是否需要校验jwt
         const path = request.route.path;
-        // 从请求头中获取 token
-        const token = request.headers['token']; // 从请求头中获取 token
+        // 从请求头中获取 token, 前者在 postman 中使用
+        const token = request.headers['token'] || windowCookies(request.headers.cookie); // 从请求头中获取 token
         const isJwtUrl = ['/auth/login'].includes(path);
         // 不需要校验的接口
         if (!isJwtUrl) {
             try {
                 const validRes = this.jwtService.verify(token);
+                
                 if (validRes) {
                     return true;
                 }
@@ -31,4 +32,17 @@ export class JwtAuthGuard implements CanActivate {
         }
         return true;
     }
+}
+
+// 在浏览器中使用
+function windowCookies(cookies: string) {
+    const cookieMap = new Map();
+    if(cookies) {
+        const list = cookies.split('; ');
+        list.forEach((item: string) => {
+            const itemlist: string[] = item.split('=');
+            cookieMap.set(itemlist[0], itemlist[1]);
+        });
+    }
+    return cookieMap.get('token');
 }
