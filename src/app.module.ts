@@ -7,7 +7,16 @@ import { CategoryModule } from '@/mobile/view/category/category.module';
 import { UserModule } from '@/mobile/view/user/user.module';
 import { AuthModule } from '@/mobile/view/auth/auth.module';
 import { SwaggerModule } from '@/mobile/view/swagger/swagger.module';
+import { UserRolesAccessModule } from '@/mobile/view/userRolesAccess/userRolesAccess.module';
 
+import { User } from '@/typeorm/mysql/user.entity';
+import { AccessEntity } from '@/typeorm/mysql/access.entity';
+import { Posts } from '@/typeorm/mysql/posts.entity';
+import { RoleEntity } from '@/typeorm/mysql/role.entity';
+import { RoleAccess } from '@/typeorm/mysql/roleAccess.entity';
+import { Tags } from '@/typeorm/mysql/tags.entity';
+import { UserExtend } from '@/typeorm/mysql/userExtend.entity';
+import { UserRoles } from '@/typeorm/mysql/userRoles.entity';
 
 // @UsePipes(new JwtAuthPipe())
 @Module({
@@ -24,20 +33,29 @@ import { SwaggerModule } from '@/mobile/view/swagger/swagger.module';
             username: "root",
             password: "123456",
             database: "my_user",
-            logging: true,
+            logging: false,
             synchronize: true,
-            dropSchema: false,
+            dropSchema: false, // 每次应用启动时，TypeORM 都会删除所有的表和数据
             charset: "utf8mb4",
             timezone: "local",
             entities: [ // 定义TypeORM需要查找的数据模型的,可以定义多个
-                __dirname + '/typeorm/mysql/*{.ts,.js}'
+                // __dirname + '/typeorm/mysql/*{.ts,.js}'
+                User,
+                Posts,
+                Tags,
+                UserExtend,
+                RoleAccess,
+                RoleEntity,
+                AccessEntity,
+                UserRoles
             ],
         }),
         HomeModule,
         CategoryModule,
         UserModule,
         AuthModule,
-        SwaggerModule
+        SwaggerModule,
+        UserRolesAccessModule
     ],
     controllers: [],
     providers: []

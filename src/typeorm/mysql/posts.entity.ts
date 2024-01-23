@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
-import { User } from './user';
-import { Tags } from './tags';
+import { User } from './user.entity';
+import { Tags } from './tags.entity';
 
 @Entity({
     name: 'posts'
@@ -31,7 +31,8 @@ export class Posts {
     })
     content: string;
     
-    @Column('tinyint', {
+    @Column({
+        type: 'tinyint',
         nullable: false,
         default: () => 0,
         name: 'is_del',

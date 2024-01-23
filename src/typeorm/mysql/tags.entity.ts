@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
-import { Posts } from './posts';
+import { Posts } from './posts.entity';
 
 @Entity({
     name: 'tags'

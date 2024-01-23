@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions, EntityManager, QueryRunner, MoreThanOrEqual } from 'typeorm';
-import { User } from '@/typeorm/mysql/user';
-import { UserExtend } from '@/typeorm/mysql/userExtend';
-import { Posts } from '@/typeorm/mysql/posts';
-import { Tags } from '@/typeorm/mysql/tags';
+import { User } from '@/typeorm/mysql/user.entity';
+import { UserExtend } from '@/typeorm/mysql/userExtend.entity';
+import { Posts } from '@/typeorm/mysql/posts.entity';
+import { Tags } from '@/typeorm/mysql/tags.entity';
 import { UserExtendDto, UserAndPostsDto, UserAndPostsAndTagsDto } from './user.dto';
 
 @Injectable()

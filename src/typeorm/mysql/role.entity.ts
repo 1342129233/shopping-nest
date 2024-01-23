@@ -1,13 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, OneToMany } from 'typeorm';
-import { UserExtend } from './userExtend';
-import { Posts } from './posts';
+// 角色表
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { UserRoles } from './userRoles.entity';
+import { RoleAccess } from './roleAccess.entity';
 
 @Entity({
-    name: "user"
+    name: 'roles'
 })
-export class User {
-    // 下面定义的会自动在数据库中生成对应的字段
-    // 主键且自动自增的
+export class RoleEntity {
     @PrimaryGeneratedColumn({
         type: 'int',
         name: 'id',
@@ -20,20 +19,22 @@ export class User {
         nullable: false,
         length: 50,
         unique: true,
-        name: 'username',
-        comment: '用户名'
+        name: 'role_title',
+        comment: '角色配置'
     })
-    username: string;
+    roleTitle: string;
+
+@Column({
+    type: 'varchar',
+    nullable: false,
+    length: 100,
+    name: 'description',
+    comment: '角色描述'
+})
+description: string;
 
     @Column({
-        type: 'varchar',
-        nullable: false,
-        length: 100,
-        comment: '密码'
-    })
-    password: string;
-
-    @Column('tinyint',{
+        type: 'int',
         nullable: false,
         default: () => 0,
         name: 'is_del',
@@ -48,7 +49,7 @@ export class User {
         comment: '创建时间'
     })
     createdAt: Date;
-
+    
     @UpdateDateColumn({
         type: 'timestamp',
         nullable: false,
@@ -57,10 +58,11 @@ export class User {
     })
     updateAt: Date;
 
-    // 一对多,自然Posts实体类中就是多对一的方式
-    @OneToOne(type => UserExtend, userExtend => userExtend.user)
-    userExtend: UserExtend;
+    // 用户 + 角色表的一对多关系
+    @ManyToMany(() => UserRoles, (userRole) => userRole.role)
+    userRoles: UserRoles[];
 
-    @OneToMany(type => Posts, post => post.user)
-    posts: Posts[];
+    @ManyToMany(() => RoleAccess, (roleAccess) => roleAccess.role)
+    roleAccess: RoleAccess[];
 }
+

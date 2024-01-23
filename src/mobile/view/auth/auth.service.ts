@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions, EntityManager, QueryRunner, MoreThanOrEqual } from 'typeorm';
-import { User } from '@/typeorm/mysql/user';
+import { User } from '@/typeorm/mysql/user.entity';
 import { JwtService } from '@nestjs/jwt';
 
 export class AuthService {

@@ -1,7 +1,7 @@
 import { Controller, Headers, Get, Post, Param, Body, Put, Delete, Response } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from '@/typeorm/mysql/user';
-import { UserExtend } from '@/typeorm/mysql/userExtend';
+import { User } from '@/typeorm/mysql/user.entity';
+import { UserExtend } from '@/typeorm/mysql/userExtend.entity';
 import { UserDto, UserExtendDto, UserAndPostsDto, UserAndPostsAndTagsDto } from './user.dto';
 
 
