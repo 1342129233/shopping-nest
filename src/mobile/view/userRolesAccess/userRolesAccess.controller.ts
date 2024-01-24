@@ -1,4 +1,4 @@
-import { Controller, Body, Get, Response } from '@nestjs/common';
+import { Controller, Body, Get, Response, Post, Query } from '@nestjs/common';
 import { UserRolesAccessService } from './userRolesAccess.service';
 import { CreateDto } from './userRolesAccess.dto';
 
@@ -8,9 +8,21 @@ export class UserRolesAccessController {
         private readonly userRolesAccessService: UserRolesAccessService
     ) {}
 
-    @Get()
+    @Post('create')
     async createUserRolesAccess(@Body() body: CreateDto, @Response() res) {
         const data = await this.userRolesAccessService.createUserRolesAccess(body)
+        res.send({
+            data
+        })
+    }
+
+    @Get('user')
+    async getUserRolesAccess(@Query('userId') userId: string, @Query('roleId') roleId: string, @Response() res) {
+        const queryReq = {
+            userId: +userId,
+            roleId: +roleId
+        }
+        const data = await this.userRolesAccessService.getUserRolesAccess(queryReq);
         res.send({
             data
         })

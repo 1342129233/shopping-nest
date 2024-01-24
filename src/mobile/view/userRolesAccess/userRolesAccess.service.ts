@@ -61,5 +61,22 @@ export class UserRolesAccessService {
         const roleAccessMain = await this.roleAccessRepo.save(roleAccess);
         return '成功';
     }
+
+    async getUserRolesAccess(req: { userId: number, roleId: number }) {
+        // 获取已设置的角色
+        const roleList = await this.userRolesRepo.find({ where: { userId: req.userId }, select: ['roleId'] });
+        // 提取全部的id
+        const roleIdList = await roleList.map(item => item.roleId);
+        // 获取全部角色
+        const result = await this.roleRepo.find({ where: { isDel: 0 } });
+
+        const all = result.map((item: any) => ({
+            id: item.id,
+            key: item.id.toString(),
+            title: item.roleTitle,
+            direction: roleIdList.includes(item.id) ? 'right' : 'left',
+        }))
+        return all;
+    }
 }
 
