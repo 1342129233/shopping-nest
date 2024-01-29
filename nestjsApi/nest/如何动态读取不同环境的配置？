@@ -1,0 +1,107 @@
+### 如何动态读区不同环境的配置？
+1.config01.ts
+```JS
+export default async () => {
+    const dbPort = await 3306;
+    return {
+        port: parseInt(process.env.PORT, 10) || 3000,
+        db: {
+            host: 'localhost',
+            posrt: dbPort
+        }
+    }
+}
+```
+
+2.config02.ts
+```JS
+import { readFile } from 'fs/promises';
+import * as yaml from 'js-yaml;' // js-yaml 是一个 JavaScript 库，用于解析和生成 YAML（YAML Ain't Markup Language）格式的数据
+import { join } from 'path';
+
+export default async() => {
+    // const config = await readFile(join(__dirname, 'config.yml'), 'utf8'); // 使用相对路径
+
+    const configFilePath = join(process.cwd(), 'src/aaa.yaml');
+    const config = await readFile(configFilePath);
+
+    rturn yaml.load(config.toString());
+}
+```
+
+config.yaml
+```yaml
+port: 3000
+db:
+    
+}
+```
+
+3.aaa.yaml
+```yaml
+application:
+    host: 'localhost'
+    port: 8080
+
+aaa:
+    bbb:
+        ccc: 'ccc'
+        port: 3306
+```
+
+4.下面的两种 env
+```JS
+// .aaa.env
+aaa=aaa1
+bbb=3
+ccc=ccc
+```
+
+5.在 app.module.ts 文件中使用
+```JS
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { BbbModule } from './bbb/bbb.module';
+import * as path from 'path';
+import config from './config';
+import config2 from './config2';
+// 使用joi进行验证
+import * as Joi from 'joi';
+
+@Module({
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true, // 声明为全局的
+            cache: true, // 缓存配置
+            // 可以读取多个配置文件 如果key冲突了怎么办?
+            // 谁在前面读取的是谁的
+            envFilePath: [
+                path.join(process.cwd(), '.aaa.env'),
+                path.join(process.cwd(), '.env'),
+            ],
+            load: [config, config2], // 加载配置文件
+            // 加载的配置文件的验证
+            validationSchema: Joi.object({
+                // NODE_ENV 只能是这几个选项
+                NODE_ENV: Joi.string()
+                    .valid('development', 'production', 'test', 'provision')
+                    .default('development'),
+                // PORT 端口号
+                PORT: Joi.number().default(3000),
+            }),
+            validationOptions: {
+                // 控制是否允许环境变量中存在未知键。默认为true
+                // allowUnknown: false,
+                // 如果为 true，则在出现第一个错误时停止验证；如果为 false，则返回所有错误 默认是false
+                // abortEarly: true,
+            }
+        }),
+        BbbModule
+    ],
+    controllers: [AppController],
+    providers: [AppService]
+})
+export class AppModule {}
+```
