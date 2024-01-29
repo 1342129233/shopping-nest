@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { JwtAuthGuard } from '@/shared/JwtStrategy/jwt.auth.guard';
 import { options } from '@/shared/JwtStrategy/config';
 import { JwtService } from '@nestjs/jwt';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -13,6 +14,8 @@ async function bootstrap() {
     app.use(cookieParser()); // 添加 cookie-parser 中间件
     const jwtService = new JwtService(options);
     app.useGlobalGuards(new JwtAuthGuard(jwtService)); // 可以设置全局守卫
+    // app.useGlobalPipes(new ValidationPipe()); // 全局验证
+
     // 配置api文档信息
     const documentOptions = new DocumentBuilder()
         .setTitle('nest framework  api文档')

@@ -26,7 +26,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ResponseData<T
             map(data => {
                 console.log('全局响应拦截器方法返回内容后...');
                 const res: any = context.switchToHttp().getResponse();
-                console.log(res.json({ code: 200, data }));
+                // console.log(res.json({ code: 200, data }));
 
                 return {
                     statusCode: 0,

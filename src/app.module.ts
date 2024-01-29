@@ -1,14 +1,19 @@
 import { Module, UsePipes } from '@nestjs/common';
+import { ConfigService, ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import "reflect-metadata";
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { createClient } from 'redis';
+import { RedisModule, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 import { HomeModule } from '@/mobile/view/home/home.module';
 import { CategoryModule } from '@/mobile/view/category/category.module';
 import { UserModule } from '@/mobile/view/user/user.module';
 import { AuthModule } from '@/mobile/view/auth/auth.module';
 import { SwaggerModule } from '@/mobile/view/swagger/swagger.module';
 import { UserRolesAccessModule } from '@/mobile/view/userRolesAccess/userRolesAccess.module';
+import { AclModule } from '@/mobile/view/acl/acl.module';
+
+// redis 配置
+import { redisConfig } from '@/shared/redis/config';
 
 // 拦截器
 import { ResponseInterceptor } from '@/shared/interceptor/response.interceptor';
@@ -22,9 +27,6 @@ import { ResponseInterceptor } from '@/shared/interceptor/response.interceptor';
 // import { Tags } from '@/typeorm/mysql/tags.entity';
 // import { UserExtend } from '@/typeorm/mysql/userExtend.entity';
 // import { UserRoles } from '@/typeorm/mysql/userRoles.entity';
-
-// redis
-import { DefaultService } from '@/shared/redis/default';
 
 // @UsePipes(new JwtAuthPipe())
 @Module({
@@ -58,30 +60,33 @@ import { DefaultService } from '@/shared/redis/default';
                 // UserRoles
             ],
         }),
+        RedisModule.forRoot({
+            config: redisConfig
+        }),
+        // 异步配置
+        // RedisModule.forRootAsync({
+        //     imports: [ConfigModule],
+        //     inject: [ConfigService],
+        //     useFactory: async(configService: ConfigService): Promise<RedisModuleOptions> => {
+        //         await somePromise();
+        //         return {
+        //             config: redisConfig
+        //         }
+        //     }
+        // }),
         HomeModule,
         CategoryModule,
         UserModule,
         AuthModule,
         SwaggerModule,
-        UserRolesAccessModule
+        UserRolesAccessModule,
+        AclModule
     ],
     controllers: [],
     providers: [
         {
             provide: APP_INTERCEPTOR,
             useClass: ResponseInterceptor,
-        },
-        DefaultService,
-        {
-            provide: 'REDIS_CLIENT',
-            async useFactory() {
-                const client = createClient({
-                password: 'root123456',
-            });
-            await client.connect();
-                client.on('error', (err) => console.log('Redis Client Error', err));
-                return client;
-            }
         }
     ]
 })
