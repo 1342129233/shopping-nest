@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RedisSessionService } from '../redisSession/redisSession.service';
+import { RedisService } from '../redisModule/redis.service';
 
 @Injectable()
 export class SessionService {
-    @Inject(RedisSessionService)
-    private readonly redisSessionService: RedisSessionService;
+    @Inject(RedisService)
+    private readonly redisService: RedisService;
 
     async setSession(
         sid: string,
@@ -14,13 +14,13 @@ export class SessionService {
         if(!sid) {
             sid = this.generateSid()
         }
-        await this.redisSessionService.hashSet(`sid_${sid}`, value, ttl);
+        await this.redisService.hashSet(`sid_${sid}`, value, ttl);
     }
 
     // 从redis中取值
     async getSession<SessionType extends Record<string, any>>(sid: string):Promise<SessionType>;
     async getSession(sid: string) {
-        return await this.redisSessionService.hashGet(`sid_${sid}`);
+        return await this.redisService.hashGet(`sid_${sid}`);
     }
 
     // 生成的随机的 session id
