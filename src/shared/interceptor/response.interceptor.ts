@@ -22,6 +22,10 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ResponseData<T
         const request = ctx.getRequest();
         // 实现数据的遍历与转变
         console.log("进入全局响应拦截器...");
+        const controller = request.route.path.split('/')[1];
+        if(controller && controller === 'special') {
+            return next.handle() as unknown as Observable<ResponseData<T>>; // 跳过全局拦截器  
+        }
         return next.handle().pipe(
             map(data => {
                 console.log('全局响应拦截器方法返回内容后...');
