@@ -4,8 +4,8 @@
 
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
+import * as xml2js from 'xml2js';
 
-const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
 
 @Injectable()

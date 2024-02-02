@@ -11,6 +11,7 @@ import { AuthModule } from '@/mobile/view/auth/auth.module';
 import { SwaggerModule } from '@/mobile/view/swagger/swagger.module';
 import { UserRolesAccessModule } from '@/mobile/view/userRolesAccess/userRolesAccess.module';
 import { AclModule } from '@/mobile/view/acl/acl.module';
+import { ShortLinkModule } from '@/mobile/view/short-link/short-link.module';
 
 // redis 配置
 import { redisConfig } from '@/shared/redis/config';
@@ -80,7 +81,8 @@ import { ResponseInterceptor } from '@/shared/interceptor/response.interceptor';
         AuthModule,
         SwaggerModule,
         UserRolesAccessModule,
-        AclModule
+        AclModule,
+        ShortLinkModule
     ],
     controllers: [],
     providers: [
