@@ -27,6 +27,8 @@ async function bootstrap() {
         .build();
     const document = SwaggerModule.createDocument(app, documentOptions);
     SwaggerModule.setup(`/docs`, app, document); // 地址 http://localhost:3000/docs 全部接口文档
+
+    app.enableCors(); // 允许跨域请求
     await app.listen(3000);
 }
 
