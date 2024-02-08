@@ -6,9 +6,10 @@ import { JwtAuthGuard } from '@/shared/JwtStrategy/jwt.auth.guard';
 import { options } from '@/shared/JwtStrategy/config';
 import { JwtService } from '@nestjs/jwt';
 import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         cors: true // 支持跨域请求
     });
     app.use(cookieParser()); // 添加 cookie-parser 中间件
@@ -29,6 +30,9 @@ async function bootstrap() {
     SwaggerModule.setup(`/docs`, app, document); // 地址 http://localhost:3000/docs 全部接口文档
 
     app.enableCors(); // 允许跨域请求
+
+    app.useStaticAssets('static', { prefix: '/pages' })
+
     await app.listen(3000);
 }
 

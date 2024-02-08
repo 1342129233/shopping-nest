@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扫码登录确认</title>
+    <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+    <style>
+        #info {
+            height: 400px;
+            line-height: 400px;
+            font-size: 20px;
+            padding: 20px;
+        }
+        #confirm, #cancel{
+            display: block;
+            width: 80%;
+            line-height: 40px;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        #confirm {
+            background: skyblue;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        是否确认登录 xxx 网站？
+    </div>
+    <button id="confirm">确认登录</button>
+    <button id="cancel">取消</button>
+</body>
+<script>
+// 1.这个页面可以改成登录页面
+// 2.登录之后返回 jwt 唯一的加密 ID
+// 3.登录页面
+const  params = new URLSearchParams(window.location.search.slice(1));
+// jwt
+const id = params.get('id') || '2107ab48-5c8c-4a02-b303-ff0966a2b7bc'; // crypto 生成的唯一ID
+
+axios.get('http://localhost:3000/qrcode-login/qrcode/scan?id=' + id).catch(e => {
+    alert('二维码已过期');
+});
+
+document.getElementById('confirm').addEventListener('click', () => {
+    axios.get('http://localhost:3000/qrcode-login/qrcode/confirm?id=' + id).catch(e => {
+        alert('二维码已过期');
+    });
+});
+
+document.getElementById('cancel').addEventListener('click', () => {
+    axios.get('http://localhost:3000/qrcode-login/qrcode/cancel?id=' + id).catch(e => {
+        alert('二维码已过期');
+    });
+});
+</script>
+</html>
