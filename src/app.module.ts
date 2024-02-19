@@ -15,6 +15,7 @@ import { ShortLinkModule } from '@/mobile/view/short-link/short-link.module';
 import { SseModule } from '@/mobile/view/sse/sse.module';
 import { UploadModule } from '@/mobile/view/upload/upload.module';
 import { QrcodeLoginModule } from '@/mobile/view/qrcode-login/qrcode-login.module';
+import { ExcelModule } from '@/mobile/view/excel/excel.module';
 
 // redis 配置
 import { redisConfig } from '@/shared/redis/config';
@@ -88,7 +89,8 @@ import { ResponseInterceptor } from '@/shared/interceptor/response.interceptor';
         ShortLinkModule,
         SseModule,
         UploadModule,
-        QrcodeLoginModule
+        QrcodeLoginModule,
+        ExcelModule
     ],
     controllers: [],
     providers: [
