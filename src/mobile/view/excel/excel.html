@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <input id="fileInput" type="file" />
+    <input id="fileInput1" type="file" multiple />
+    <input id="fileInput2" type="file" multiple />
+    <script>
+      const fileInput = document.querySelector('#fileInput');
+      const fileInput1 = document.querySelector('#fileInput1');
+      const fileInput2 = document.querySelector('#fileInput2');
+
+      async function formData() {
+        const data = new FormData();
+        data.set('name', 'i love china');
+        data.set('uploaded_file', fileInput.files[0]);
+        // Content-Type:multipart/form-data; boundary=----WebKitFormBoundaryr2DuvIaHwRwQfGRt
+        const res = await axios.post('http://localhost:3000/profile', data);
+        console.log(res, 'fileInput');
+      }
+
+      fileInput.onchange = formData;
+
+      async function formData1() {
+        const data = new FormData();
+        data.set('name', 'i love china');
+        [...fileInput1.files].forEach((item) => {
+          data.append('photos', item);
+        });
+        // Content-Type:multipart/form-data; boundary=----WebKitFormBoundaryr2DuvIaHwRwQfGRt
+        const res = await axios.post(
+          'http://localhost:3000/photos/upload',
+          data,
+        );
+      }
+
+      fileInput1.onchange = formData1;
+
+      async function formData2() {
+        const data = new FormData();
+        data.set('name', 'i love china');
+        data.append('avatar', fileInput2.files[0]);
+        data.append('gallery', fileInput2.files[1]);
+        data.append('gallery', fileInput2.files[2]);
+
+        const res = await axios.post(
+          'http://localhost:3000/cool-profile',
+          data,
+        );
+      }
+
+      fileInput2.onchange = formData2;
+    </script>
+  </body>
+</html>
