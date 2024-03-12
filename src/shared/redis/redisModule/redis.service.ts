@@ -92,6 +92,66 @@ export class RedisService {
 
         return list;
     }
+
+    // 封装一系列的redis操作的方法
+
+    // 新增
+    async zAdd(key: string, members: Record<string, number>) {
+        const mems = [];
+        for(const key in members) {
+            mems.push({
+                value: key,
+                score: members[key]
+            })
+        }
+        return await this.redisClient.zAdd(key, mems);
+    }
+
+    // 获取分数
+    async zScore(key: string, member: string) {
+        return await this.redisClient.zScore(key, member);
+    }
+
+    // 排名
+    async zRank(key: string, member: string) {
+        return await this.redisClient.zRank(key, member);
+    }
+
+    // 增量增加
+    async zIncr(key: string, member: string, increment: number) {
+        return await this.redisClient.zIncrBy(key, increment, member);
+    }
+
+    async zRankingList(key: string, start: number = 0, end: number = -1) {
+        const keys = await this.redisClient.zRange(key, start, end, {
+            REV: true,
+        })
+        const rankingList = {};
+        for(let i = 0; i < keys.length; i++) {
+            rankingList[keys[i]] = await this.zScore(key, keys[i]);
+        }
+        return rankingList;
+    }
+
+    // 联合
+    async zUnion(newKey: string, keys: string[]) {
+        if(!keys.length) {
+            return [];
+        }
+        if(keys.length === 1) {
+            return this.zRankingList(keys[0]);
+        }
+
+        await this.redisClient.zUnionStore(newKey, keys);
+
+        return this.zRankingList(newKey);
+    }
+
+    // 获取 keys, keys 这是一个危险的操作,请谨慎操作
+    async keys(pattern: string) {
+        // keys 命令可能会被禁用,这里可以使用 scan 命令来代替
+        return this.redisClient.keys(pattern);
+    }
 }
 
 
